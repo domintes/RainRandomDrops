@@ -8,11 +8,18 @@ document.addEventListener('DOMContentLoaded', async function() {
   const authStatus = document.getElementById('auth-status');
   const mainStatus = document.getElementById('main-status');
   
+  // Manual token elements
+  const manualTokenInput = document.getElementById('manual-token');
+  const testTokenBtn = document.getElementById('test-token-btn');
+  
   const totalRandomizedEl = document.getElementById('total-randomized');
   const totalCollectionsEl = document.getElementById('total-collections');
   const totalBookmarksEl = document.getElementById('total-bookmarks');
   
   const randomBtn = document.getElementById('random-btn');
+  const localRandomBtn = document.getElementById('local-random-btn');
+  const watchedBtn = document.getElementById('watched-btn');
+  const unwatchBtn = document.getElementById('unwatch-btn');
   const prevBtn = document.getElementById('prev-btn');
   const nextBtn = document.getElementById('next-btn');
   
@@ -21,6 +28,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   const selectedTagsEl = document.getElementById('selected-tags');
   const tagSuggestions = document.getElementById('tag-suggestions');
   const minCountInput = document.getElementById('min-count');
+  const hideBelowCountInput = document.getElementById('hide-below-count');
+  const showWatchedCollectionCheckbox = document.getElementById('show-watched-collection');
   const applyFiltersBtn = document.getElementById('apply-filters-btn');
   
   // State
@@ -38,6 +47,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         'selectedCollectionId',
         'selectedTags', 
         'minBookmarkCount',
+        'hideCollectionsBelowCount',
+        'showWatchedCollection',
         'totalRandomized',
         'randomHistory',
         'historyIndex'
@@ -50,6 +61,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       
       if (data.minBookmarkCount) {
         minCountInput.value = data.minBookmarkCount;
+      }
+      
+      if (data.hideCollectionsBelowCount) {
+        hideBelowCountInput.value = data.hideCollectionsBelowCount;
+      }
+      
+      if (data.showWatchedCollection) {
+        showWatchedCollectionCheckbox.checked = data.showWatchedCollection;
       }
       
       // Check authentication
@@ -68,15 +87,21 @@ document.addEventListener('DOMContentLoaded', async function() {
   function setupEventListeners() {
     // Authentication
     authBtn.addEventListener('click', authenticate);
+    testTokenBtn.addEventListener('click', testManualToken);
     
     // Main controls
     randomBtn.addEventListener('click', pickRandomBookmark);
+    localRandomBtn.addEventListener('click', pickRandomLocalBookmark);
+    watchedBtn.addEventListener('click', markCurrentWatched);
+    unwatchBtn.addEventListener('click', unmarkCurrentWatched);
     prevBtn.addEventListener('click', goToPrevious);
     nextBtn.addEventListener('click', goToNext);
     
     // Filters
     collectionSelect.addEventListener('change', onCollectionChange);
     minCountInput.addEventListener('change', onMinCountChange);
+    hideBelowCountInput.addEventListener('change', onHideBelowCountChange);
+    showWatchedCollectionCheckbox.addEventListener('change', onShowWatchedChange);
     applyFiltersBtn.addEventListener('click', applyFilters);
     
     // Tag input
@@ -89,34 +114,57 @@ document.addEventListener('DOMContentLoaded', async function() {
         tagSuggestions.style.display = 'none';
       }
     });
+    
+    // Handle Enter key for manual token
+    manualTokenInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        testManualToken();
+      }
+    });
   }
   
   async function authenticate() {
+    // Check if auth is already in progress
+    const authData = await chrome.storage.sync.get(['authInProgress']);
+    if (authData.authInProgress) {
+      authStatus.textContent = 'Authentication already in progress. Please wait...';
+      authStatus.className = 'status warning';
+      return;
+    }
+    
     authBtn.disabled = true;
     authBtn.textContent = 'Connecting...';
     authStatus.textContent = 'Connecting to Raindrop.io...';
+    authStatus.className = 'status info';
+    
+    // Set timeout to reset UI if authentication hangs
+    const authTimeoutId = setTimeout(() => {
+      authBtn.disabled = false;
+      authBtn.textContent = 'Connect to Raindrop.io';
+      authStatus.textContent = 'Authentication timeout. Please try again.';
+      authStatus.className = 'status error';
+    }, 25000); // 25 seconds timeout
     
     try {
       const response = await sendMessage({ action: 'authenticate' });
+      
+      clearTimeout(authTimeoutId);
       
       if (response.error) {
         throw new Error(response.error);
       }
       
-      isAuthenticated = true;
-      authStatus.textContent = `Welcome ${response.user.fullName || 'User'}!`;
-      authStatus.className = 'status success';
-      
-      // Show main sections
-      mainSection.classList.remove('hidden');
-      settingsSection.classList.remove('hidden');
-      
-      // Load data
-      await loadCollections();
-      await loadTags();
-      await loadSavedState();
+      if (!response || !response.user || !response.user.fullName) {
+        authStatus.textContent = 'Authentication failed: No user info returned.';
+        authStatus.className = 'status error';
+        isAuthenticated = false;
+        return;
+      }
+      await handleAuthSuccess(response);
       
     } catch (error) {
+      clearTimeout(authTimeoutId);
       console.error('Authentication failed:', error);
       authStatus.textContent = 'Authentication failed: ' + error.message;
       authStatus.className = 'status error';
@@ -124,6 +172,66 @@ document.addEventListener('DOMContentLoaded', async function() {
       authBtn.disabled = false;
       authBtn.textContent = 'Connect to Raindrop.io';
     }
+  }
+  
+  async function testManualToken() {
+    const token = manualTokenInput.value.trim();
+    
+    if (!token) {
+      authStatus.textContent = 'Please enter a token first';
+      authStatus.className = 'status error';
+      return;
+    }
+    
+    testTokenBtn.disabled = true;
+    testTokenBtn.textContent = 'Testing...';
+    authStatus.textContent = 'Testing token...';
+    authStatus.className = 'status info';
+    
+    try {
+      const response = await sendMessage({ 
+        action: 'test-token', 
+        token: token 
+      });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      await handleAuthSuccess(response);
+      manualTokenInput.value = ''; // Clear the input
+      
+    } catch (error) {
+      console.error('Token test failed:', error);
+      authStatus.textContent = 'Token test failed: ' + error.message;
+      authStatus.className = 'status error';
+    } finally {
+      testTokenBtn.disabled = false;
+      testTokenBtn.textContent = 'Test Token';
+    }
+  }
+  
+  async function handleAuthSuccess(response) {
+    if (!response || !response.user || !response.user.fullName) {
+      authStatus.textContent = 'Authentication failed: No user info returned.';
+      authStatus.className = 'status error';
+      isAuthenticated = false;
+      mainSection.classList.add('hidden');
+      settingsSection.classList.add('hidden');
+      return;
+    }
+    isAuthenticated = true;
+    authStatus.textContent = `Welcome ${response.user.fullName || 'User'}! (${response.method})`;
+    authStatus.className = 'status success';
+    
+    // Show main sections
+    mainSection.classList.remove('hidden');
+    settingsSection.classList.remove('hidden');
+    
+    // Load data
+    await loadCollections();
+    await loadTags();
+    await loadSavedState();
   }
   
   async function checkAuthentication() {
@@ -135,14 +243,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         throw new Error(response.error);
       }
       
-      isAuthenticated = true;
+      await handleAuthSuccess({ user: response.item, method: 'existing' });
       authSection.classList.add('hidden');
-      mainSection.classList.remove('hidden');
-      settingsSection.classList.remove('hidden');
-      
-      await loadCollections();
-      await loadTags();
-      await loadSavedState();
       
     } catch (error) {
       console.error('Authentication check failed:', error);
@@ -394,6 +496,133 @@ document.addEventListener('DOMContentLoaded', async function() {
   function updateSelectedTags() {
     const tags = getSelectedTags();
     chrome.storage.sync.set({ selectedTags: tags });
+  }
+  
+  // New functions for enhanced features
+  async function pickRandomLocalBookmark() {
+    try {
+      randomBtn.disabled = true;
+      localRandomBtn.disabled = true;
+      localRandomBtn.textContent = 'Picking...';
+      mainStatus.textContent = 'Picking random local bookmark...';
+      mainStatus.className = 'status info';
+      
+      const response = await sendMessage({ action: 'pick-random-local' });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      mainStatus.textContent = `📚 Opened: ${response.bookmark.title}`;
+      mainStatus.className = 'status success';
+      
+      // Update counter (local bookmarks don't count towards Raindrop counter)
+      
+    } catch (error) {
+      console.error('Error picking random local bookmark:', error);
+      mainStatus.textContent = 'Error: ' + error.message;
+      mainStatus.className = 'status error';
+    } finally {
+      randomBtn.disabled = false;
+      localRandomBtn.disabled = false;
+      localRandomBtn.textContent = '📚 Local Random';
+    }
+  }
+  
+  async function markCurrentWatched() {
+    try {
+      const data = await chrome.storage.sync.get(['randomHistory', 'historyIndex']);
+      const history = data.randomHistory || [];
+      const index = data.historyIndex || -1;
+      
+      if (index < 0 || index >= history.length) {
+        mainStatus.textContent = 'No bookmark to mark as watched';
+        mainStatus.className = 'status error';
+        return;
+      }
+      
+      const currentBookmark = history[index];
+      if (currentBookmark.type === 'local') {
+        mainStatus.textContent = 'Cannot mark local bookmarks as watched';
+        mainStatus.className = 'status error';
+        return;
+      }
+      
+      const response = await sendMessage({ 
+        action: 'mark-watched', 
+        bookmarkId: currentBookmark._id,
+        watched: true
+      });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      mainStatus.textContent = `👁️ Marked "${currentBookmark.title}" as watched`;
+      mainStatus.className = 'status success';
+      
+      // Refresh collections to update watched count
+      await loadCollections();
+      
+    } catch (error) {
+      console.error('Error marking bookmark as watched:', error);
+      mainStatus.textContent = 'Error: ' + error.message;
+      mainStatus.className = 'status error';
+    }
+  }
+  
+  async function unmarkCurrentWatched() {
+    try {
+      const data = await chrome.storage.sync.get(['randomHistory', 'historyIndex']);
+      const history = data.randomHistory || [];
+      const index = data.historyIndex || -1;
+      
+      if (index < 0 || index >= history.length) {
+        mainStatus.textContent = 'No bookmark to unmark';
+        mainStatus.className = 'status error';
+        return;
+      }
+      
+      const currentBookmark = history[index];
+      if (currentBookmark.type === 'local') {
+        mainStatus.textContent = 'Cannot unmark local bookmarks';
+        mainStatus.className = 'status error';
+        return;
+      }
+      
+      const response = await sendMessage({ 
+        action: 'mark-watched', 
+        bookmarkId: currentBookmark._id,
+        watched: false
+      });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      mainStatus.textContent = `🔄 Unmarked "${currentBookmark.title}" as watched`;
+      mainStatus.className = 'status success';
+      
+      // Refresh collections to update watched count
+      await loadCollections();
+      
+    } catch (error) {
+      console.error('Error unmarking bookmark:', error);
+      mainStatus.textContent = 'Error: ' + error.message;
+      mainStatus.className = 'status error';
+    }
+  }
+  
+  async function onHideBelowCountChange() {
+    const hideCount = parseInt(hideBelowCountInput.value) || 0;
+    await chrome.storage.sync.set({ hideCollectionsBelowCount: hideCount });
+    await loadCollections();
+  }
+  
+  async function onShowWatchedChange() {
+    const showWatched = showWatchedCollectionCheckbox.checked;
+    await chrome.storage.sync.set({ showWatchedCollection: showWatched });
+    await loadCollections();
   }
   
   function showStatus(message, type = 'info') {

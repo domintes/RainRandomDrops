@@ -6,6 +6,7 @@
   <title>Rain Random Drops</title>
   <style>
     body {
+      box-sizing: border-box;
       width: 380px;
       min-height: 500px;
       margin: 0;
@@ -92,6 +93,7 @@
       font-weight: 500;
       transition: background-color 0.2s;
       width: 100%;
+      box-sizing: border-box;
     }
 
     .button:hover {
@@ -267,6 +269,24 @@
       color: #333;
     }
 
+    .button.info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .button.info:hover {
+      background: #138496;
+    }
+
+    .button.warning {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .button.warning:hover {
+      background: #e0a800;
+    }
+
     .hidden {
       display: none;
     }
@@ -282,6 +302,15 @@
     <h3>Authentication</h3>
     <div id="auth-status" class="status info">Click to connect to Raindrop.io</div>
     <button id="auth-btn" class="button">Connect to Raindrop.io</button>
+    
+    <div class="form-group" style="margin-top: 16px;">
+      <label for="manual-token">Or enter token manually:</label>
+      <input type="password" id="manual-token" placeholder="Paste your Raindrop.io access token">
+      <button id="test-token-btn" class="button secondary" style="margin-top: 8px;">Test Token</button>
+      <div class="help-text">
+        <a href="https://app.raindrop.io/settings/integrations" target="_blank">Get your token here</a>
+      </div>
+    </div>
   </div>
 
   <div id="main-section" class="section hidden">
@@ -305,6 +334,12 @@
       <button id="prev-btn" class="button secondary">◀ Prev</button>
       <button id="random-btn" class="button success">🎲 Random</button>
       <button id="next-btn" class="button secondary">Next ▶</button>
+    </div>
+    
+    <div class="controls" style="margin-top: 8px;">
+      <button id="local-random-btn" class="button info">📚 Local Random</button>
+      <button id="watched-btn" class="button warning">👁️ Mark Watched</button>
+      <button id="unwatch-btn" class="button secondary">🔄 Unmark</button>
     </div>
 
     <div id="main-status" class="status info">Ready to pick random bookmark</div>
@@ -332,6 +367,19 @@
     <div class="form-group">
       <label for="min-count">Hide collections/tags with less than:</label>
       <input type="number" id="min-count" min="0" value="0" placeholder="0">
+    </div>
+    
+    <div class="form-group">
+      <label for="hide-below-count">Hide collections below count:</label>
+      <input type="number" id="hide-below-count" min="0" value="0" placeholder="0">
+      <div class="help-text">Collections with fewer bookmarks will be hidden</div>
+    </div>
+    
+    <div class="form-group">
+      <label>
+        <input type="checkbox" id="show-watched-collection"> Show "Watched" collection
+      </label>
+      <div class="help-text">Create a special collection for marked bookmarks</div>
     </div>
 
     <button id="apply-filters-btn" class="button">Apply Filters</button>

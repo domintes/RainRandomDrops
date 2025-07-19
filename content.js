@@ -336,9 +336,11 @@ class RainRandomDropsUI {
   }
   
   addTag(tag) {
-    if (!tag) return;
+    if (!tag || !this.widget) return;
     
     const selectedTagsEl = this.widget.querySelector('#rain-selected-tags');
+    if (!selectedTagsEl) return;
+    
     const existingTags = [...selectedTagsEl.querySelectorAll('.rain-selected-tag')].map(el => el.dataset.tag);
     
     if (existingTags.includes(tag)) return;
@@ -358,7 +360,12 @@ class RainRandomDropsUI {
   }
   
   updateSelectedTags() {
-    const tags = [...this.widget.querySelectorAll('.rain-selected-tag')].map(el => el.dataset.tag);
+    if (!this.widget) return;
+    
+    const tagElements = this.widget.querySelectorAll('.rain-selected-tag');
+    if (!tagElements) return;
+    
+    const tags = [...tagElements].map(el => el.dataset.tag).filter(tag => tag);
     chrome.storage.sync.set({ selectedTags: tags });
   }
   
@@ -413,7 +420,14 @@ class RainRandomDropsUI {
       this.createWidget();
     }
     
-    this.widget.style.display = 'block';
+    // Pokazuj widget tylko jeśli jest accessToken
+    chrome.storage.sync.get(['accessToken'], (data) => {
+      if (data.accessToken) {
+        this.widget.style.display = 'block';
+      } else {
+        this.widget.style.display = 'none';
+      }
+    });
     this.isVisible = true;
     
     // Load saved state
@@ -438,11 +452,13 @@ class RainRandomDropsUI {
         if (counter) counter.textContent = data.totalRandomized;
       }
       
-      if (data.selectedTags) {
+      if (data.selectedTags && Array.isArray(data.selectedTags)) {
         const selectedTagsEl = this.widget.querySelector('#rain-selected-tags');
         if (selectedTagsEl) {
           selectedTagsEl.innerHTML = '';
-          data.selectedTags.forEach(tag => this.addTag(tag));
+          data.selectedTags.forEach(tag => {
+            if (tag) this.addTag(tag);
+          });
         }
       }
     });

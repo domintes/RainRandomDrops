@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cloud -->
+  <g fill="#4A90E2">
+    <ellipse cx="8" cy="6" rx="4.5" ry="2.5"/>
+    <ellipse cx="6" cy="5.5" rx="2.5" ry="2"/>
+    <ellipse cx="10" cy="5.5" rx="2.5" ry="2"/>
+  </g>
+  
+  <!-- Rain drops -->
+  <g fill="#2E5BBA" opacity="0.9">
+    <ellipse cx="5" cy="10" rx="0.4" ry="1"/>
+    <ellipse cx="7" cy="9.5" rx="0.3" ry="0.8"/>
+    <ellipse cx="9" cy="10" rx="0.4" ry="1"/>
+    <ellipse cx="11" cy="9.5" rx="0.3" ry="0.8"/>
+    
+    <ellipse cx="4" cy="12" rx="0.3" ry="0.8"/>
+    <ellipse cx="6" cy="12.5" rx="0.4" ry="1"/>
+    <ellipse cx="8" cy="12" rx="0.4" ry="1"/>
+    <ellipse cx="10" cy="12.5" rx="0.3" ry="0.8"/>
+    <ellipse cx="12" cy="12" rx="0.3" ry="0.8"/>
+    
+    <ellipse cx="5.5" cy="14" rx="0.3" ry="0.8"/>
+    <ellipse cx="7.5" cy="14.5" rx="0.4" ry="1"/>
+    <ellipse cx="9.5" cy="14" rx="0.3" ry="0.8"/>
+  </g>
+  
+  <!-- Letter R -->
+  <text x="8" y="7" text-anchor="middle" fill="white" font-family="Arial" font-size="3" font-weight="bold">R</text>
+</svg>

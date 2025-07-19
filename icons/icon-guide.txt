@@ -1,0 +1,56 @@
+# Icon Placeholder Code
+
+Since actual PNG files cannot be created in this text environment, here are SVG codes you can convert to PNG icons:
+
+## Basic Rain Drop Icon (Blue theme)
+
+```svg
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4da6ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066cc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Main raindrop shape -->
+  <path d="M64 20 C64 20, 90 50, 90 75 C90 93, 79 105, 64 105 C49 105, 38 93, 38 75 C38 50, 64 20, 64 20 Z" fill="url(#grad1)" stroke="#003d7a" stroke-width="2"/>
+  <!-- Highlight -->
+  <ellipse cx="58" cy="45" rx="8" ry="12" fill="#87ceeb" opacity="0.7"/>
+  <!-- Random/shuffle symbol -->
+  <g transform="translate(64,85)" fill="white" opacity="0.8">
+    <text x="0" y="0" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold">🎲</text>
+  </g>
+</svg>
+```
+
+## Alternative Icon with Multiple Drops
+
+```svg
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4da6ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066cc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Multiple raindrops -->
+  <path d="M40 25 C40 25, 55 45, 55 60 C55 70, 50 75, 40 75 C30 75, 25 70, 25 60 C25 45, 40 25, 40 25 Z" fill="url(#grad1)" opacity="0.8"/>
+  <path d="M70 15 C70 15, 90 40, 90 58 C90 72, 82 80, 70 80 C58 80, 50 72, 50 58 C50 40, 70 15, 70 15 Z" fill="url(#grad1)"/>
+  <path d="M88 45 C88 45, 100 60, 100 72 C100 80, 96 85, 88 85 C80 85, 76 80, 76 72 C76 60, 88 45, 88 45 Z" fill="url(#grad1)" opacity="0.7"/>
+</svg>
+```
+
+## Converting to PNG
+
+1. Copy the SVG code above
+2. Use an online SVG to PNG converter (like cloudconvert.com)
+3. Generate all required sizes: 16x16, 32x32, 48x48, 128x128
+4. Save as icon16.png, icon32.png, icon48.png, icon128.png
+5. Replace the placeholder files in the icons/ directory
+
+## Alternative - Use Online Icon Generators
+
+1. Search for "chrome extension icon generator"
+2. Use services like icoconvert.com or favicon.io
+3. Upload a simple raindrop image or use emoji 💧
+4. Download all required sizes

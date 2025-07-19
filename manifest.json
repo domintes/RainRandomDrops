@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "Rain Random Drops",
+  "version": "1.0.0",
+  "description": "Pick random bookmarks from Raindrop.io collections with advanced filtering",
+  "author": "Domintes",
+  
+  "permissions": [
+    "storage",
+    "activeTab",
+    "identity"
+  ],
+  
+  "host_permissions": [
+    "https://api.raindrop.io/*",
+    "https://raindrop.io/*"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "css": ["styles.css"]
+  }],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Rain Random Drops",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "commands": {
+    "random-bookmark": {
+      "suggested_key": {
+        "default": "Alt+R"
+      },
+      "description": "Pick random bookmark from last used collection"
+    },
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+R"
+      }
+    }
+  },
+  
+  "options_page": "options.html",
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rain Random Drops - Options</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0066cc, #004499);
+      color: white;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 300;
+    }
+
+    .header p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 24px;
+    }
+
+    .section {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .section h2 {
+      color: #0066cc;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0066cc;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+
+    .form-group .help-text {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      font-weight: normal;
+      cursor: pointer;
+    }
+
+    .button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-right: 8px;
+    }
+
+    .button:hover {
+      background: #0052a3;
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button.secondary {
+      background: #6c757d;
+    }
+
+    .button.secondary:hover {
+      background: #5a6268;
+    }
+
+    .button.danger {
+      background: #dc3545;
+    }
+
+    .button.danger:hover {
+      background: #c82333;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #0066cc;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .shortcut-list {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 6px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .shortcut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .shortcut-item:last-child {
+      border-bottom: none;
+    }
+
+    .shortcut-key {
+      background: #343a40;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      .header {
+        padding: 20px 16px;
+      }
+      
+      .content {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌧️ Rain Random Drops</h1>
+      <p>Extension Options & Settings</p>
+    </div>
+
+    <div class="content">
+      <div id="status-message" class="status hidden"></div>
+
+      <!-- Statistics Section -->
+      <div class="section">
+        <h2>Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span id="total-randomized" class="stat-value">0</span>
+            <div class="stat-label">Total Randomized</div>
+          </div>
+          <div class="stat-card">
+            <span id="total-visited" class="stat-value">0</span>
+            <div class="stat-label">Visited Bookmarks</div>
+          </div>
+          <div class="stat-card">
+            <span id="total-collections" class="stat-value">0</span>
+            <div class="stat-label">Collections</div>
+          </div>
+          <div class="stat-card">
+            <span id="available-bookmarks" class="stat-value">0</span>
+            <div class="stat-label">Available Bookmarks</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Settings Section -->
+      <div class="section">
+        <h2>Filter Settings</h2>
+        
+        <div class="form-group">
+          <label for="default-collection">Default Collection:</label>
+          <select id="default-collection">
+            <option value="0">All Bookmarks</option>
+          </select>
+          <div class="help-text">Choose the default collection to use when the extension starts</div>
+        </div>
+
+        <div class="form-group">
+          <label for="min-bookmark-count">Minimum Bookmark Count:</label>
+          <input type="number" id="min-bookmark-count" min="0" value="0">
+          <div class="help-text">Hide collections and tags with fewer than this number of bookmarks</div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="auto-mark-visited">
+          <label for="auto-mark-visited">Automatically mark bookmarks as visited when opened</label>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="show-notification">
+          <label for="show-notification">Show notification when bookmark is picked</label>
+        </div>
+      </div>
+
+      <!-- Interface Settings Section -->
+      <div class="section">
+        <h2>Interface Settings</h2>
+
+        <div class="form-group">
+          <label for="widget-position">Widget Position:</label>
+          <select id="widget-position">
+            <option value="top-right">Top Right</option>
+            <option value="top-left">Top Left</option>
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+          </select>
+          <div class="help-text">Choose where the floating widget appears on pages</div>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="widget-auto-hide">
+          <label for="widget-auto-hide">Auto-hide widget after picking bookmark</label>
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="dark-theme">
+          <label for="dark-theme">Use dark theme</label>
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts Section -->
+      <div class="section">
+        <h2>Keyboard Shortcuts</h2>
+        <div class="shortcut-list">
+          <div class="shortcut-item">
+            <span>Pick random bookmark</span>
+            <span class="shortcut-key">Alt + R</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Open extension popup</span>
+            <span class="shortcut-key">Ctrl + Shift + R</span>
+          </div>
+          <div class="shortcut-item">
+            <span>Close widget/popup</span>
+            <span class="shortcut-key">Escape</span>
+          </div>
+        </div>
+        <div class="help-text">
+          You can customize keyboard shortcuts in Chrome's extension settings: 
+          <strong>chrome://extensions/shortcuts</strong>
+        </div>
+      </div>
+
+      <!-- Data Management Section -->
+      <div class="section">
+        <h2>Data Management</h2>
+        
+        <div class="form-group">
+          <button id="export-data-btn" class="button secondary">Export Data</button>
+          <button id="import-data-btn" class="button secondary">Import Data</button>
+          <input type="file" id="import-file" accept=".json" class="hidden">
+          <div class="help-text">Export or import your settings, visited bookmarks, and history</div>
+        </div>
+
+        <div class="form-group">
+          <button id="clear-visited-btn" class="button danger">Clear Visited Bookmarks</button>
+          <div class="help-text">Remove all visited bookmark records</div>
+        </div>
+
+        <div class="form-group">
+          <button id="clear-history-btn" class="button danger">Clear History</button>
+          <div class="help-text">Remove all randomization history</div>
+        </div>
+
+        <div class="form-group">
+          <button id="reset-all-btn" class="button danger">Reset All Data</button>
+          <div class="help-text">Reset all extension data (cannot be undone)</div>
+        </div>
+      </div>
+
+      <!-- Account Section -->
+      <div class="section">
+        <h2>Account</h2>
+        <div class="form-group">
+          <button id="disconnect-btn" class="button danger">Disconnect Account</button>
+          <div class="help-text">Remove stored authentication and return to login screen</div>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <div class="form-group">
+        <button id="save-btn" class="button">Save Settings</button>
+        <button id="reset-btn" class="button secondary">Reset to Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

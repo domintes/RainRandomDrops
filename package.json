@@ -1,0 +1,29 @@
+{
+  "name": "rain-random-drops",
+  "version": "1.0.0",
+  "description": "Chrome extension for randomly selecting bookmarks from Raindrop.io collections",
+  "author": "Domintes",
+  "license": "MIT",
+  "keywords": [
+    "chrome-extension",
+    "raindrop",
+    "bookmarks",
+    "random",
+    "productivity"
+  ],
+  "scripts": {
+    "build": "echo 'No build process needed - extension ready to load'",
+    "test": "echo 'No tests configured'",
+    "lint": "echo 'No linting configured'",
+    "dev": "echo 'Load extension in Chrome developer mode'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "private"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

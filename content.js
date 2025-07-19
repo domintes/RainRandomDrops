@@ -6,10 +6,21 @@ class RainRandomDropsUI {
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
     
-    this.init();
-  }
-  
-  init() {
+    this.init();    try {
+      const response = await this.sendMessage({ action: 'get-collections' });
+      
+      if (!response) {
+        throw new Error('No response from get-collections');
+      }
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      const collectionsSelect = this.widget.querySelector('#rain-collection-select');
+      collectionsSelect.innerHTML = '<option value="0">All Bookmarks</option>';
+      
+      (response.items || []).forEach(collection => { init() {
     // Listen for messages from background script
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === 'show-bookmark-popup') {
@@ -212,11 +223,19 @@ class RainRandomDropsUI {
     try {
       const response = await this.sendMessage({ action: 'authenticate' });
       
+      if (!response) {
+        throw new Error('No response from authentication');
+      }
+      
       if (response.error) {
         throw new Error(response.error);
       }
       
-      statusEl.textContent = `Welcome ${response.user.fullName || 'User'}!`;
+      if (!response.user || !response.user.fullName) {
+        throw new Error('Authentication response missing user info');
+      }
+      
+      statusEl.textContent = `Welcome ${response.user.fullName}!`;
       
       // Show main section, hide auth section
       this.widget.querySelector('#rain-auth-section').style.display = 'none';

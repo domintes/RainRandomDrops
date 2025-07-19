@@ -224,7 +224,10 @@ async function handleAuthentication() {
             console.log('Using CLIENT_SECRET:', credentials.CLIENT_SECRET.substring(0, 8) + '...');
             
             if (tokenData.access_token) {
+              console.log('Saving access token to storage...');
               await chrome.storage.sync.set({ accessToken: tokenData.access_token });
+              console.log('Token saved, verifying with API...');
+              
               const userInfo = await makeAPIRequest('/user');
               console.log('OAuth authentication successful:', userInfo);
               if (!userInfo || !userInfo.item || !userInfo.item.fullName) {
@@ -718,11 +721,12 @@ async function makeAPIRequest(endpoint, method = 'GET', data = null) {
     const storage = await chrome.storage.sync.get(['accessToken']);
     const token = storage.accessToken;
     
+    console.log('Making API request to:', `${RAINDROP_API_BASE}${endpoint}`);
+    console.log('Token available:', token ? 'YES' : 'NO');
+    
     if (!token) {
       throw new Error('No access token found. Please authenticate first.');
     }
-    
-    console.log('Making API request to:', `${RAINDROP_API_BASE}${endpoint}`);
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);

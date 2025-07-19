@@ -48,15 +48,6 @@
     <p>You can close this tab and return to using Rain Random Drops extension.</p>
   </div>
   
-  <script>
-    // This page handles OAuth callback
-    // The authorization code will be extracted by the background script
-    console.log('OAuth callback page loaded');
-    
-    // Auto-close after a few seconds
-    setTimeout(() => {
-      window.close();
-    }, 3000);
-  </script>
+  <script src="oauth.js"></script>
 </body>
 </html>

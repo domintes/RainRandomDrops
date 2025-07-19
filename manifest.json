@@ -55,7 +55,7 @@
   "options_page": "options.html",
   
   "web_accessible_resources": [{
-    "resources": ["oauth.html"],
+    "resources": ["oauth.html", "oauth.js"],
     "matches": ["<all_urls>"]
   }],
   
